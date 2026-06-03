@@ -1,0 +1,1531 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Propuesta Comercial · Aprova</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+
+<style>
+/* ══ VARIABLES ══════════════════════════════════════════════════════════ */
+:root {
+  --g-light:    #ECFFD2;
+  --g-mid:      #8AC542;
+  --g-dark:     #4C7C00;
+  --ink:        #2D2E2C;
+  --ink-soft:   #4a4b49;
+  --ink-mute:   #7a7b75;
+  --surface:    #F4FAE8;
+  --white:      #FFFFFF;
+  --border:     #d6e8b4;
+  --danger:     #dc2626;
+  /* edit */
+  --edit-bg:    #f7ffe8;
+  --edit-border:#8AC542;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'Sora', sans-serif;
+  background: #e4eecc;
+  color: var(--ink);
+  font-size: 13.5px;
+  line-height: 1.65;
+}
+
+/* ══ TOOLBAR ════════════════════════════════════════════════════════════ */
+#toolbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  background: var(--ink);
+  padding: 10px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.22);
+}
+.toolbar-brand {
+  font-family: 'DM Serif Display', serif;
+  font-size: 17px;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.toolbar-brand .logo-dot {
+  width: 22px; height: 22px;
+  background: var(--g-mid);
+  border-radius: 50%;
+  display: inline-block;
+}
+.toolbar-brand span { color: var(--g-mid); }
+.toolbar-center {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11.5px;
+  color: rgba(255,255,255,0.55);
+}
+.edit-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--g-mid);
+  animation: pulse 2s infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+.toolbar-actions { display: flex; gap: 10px; }
+.btn-toolbar {
+  padding: 7px 18px;
+  border-radius: 6px;
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  font-family: 'Sora', sans-serif;
+  transition: all 0.15s;
+  letter-spacing: 0.02em;
+}
+.btn-preview {
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.2);
+}
+.btn-preview:hover { background: rgba(255,255,255,0.18); }
+.btn-print {
+  background: var(--g-mid);
+  color: var(--ink);
+}
+.btn-print:hover { background: #9dd14d; }
+
+/* ══ PAGE WRAPPER ═══════════════════════════════════════════════════════ */
+.page {
+  max-width: 960px;
+  margin: 64px auto 48px;
+  background: var(--white);
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 8px 48px rgba(0,0,0,0.14);
+}
+
+/* ══ EDITABLE ═══════════════════════════════════════════════════════════ */
+[contenteditable="true"] {
+  outline: none;
+  border-radius: 3px;
+  transition: background 0.18s, box-shadow 0.18s;
+  cursor: text;
+}
+[contenteditable="true"]:hover {
+  background: var(--edit-bg);
+  box-shadow: 0 0 0 2px var(--edit-border);
+  color: var(--ink) !important;
+}
+[contenteditable="true"]:focus {
+  background: #f0ffe0;
+  box-shadow: 0 0 0 2.5px var(--g-dark);
+  color: var(--ink) !important;
+}
+[contenteditable="true"][data-placeholder]:empty::before {
+  content: attr(data-placeholder);
+  color: var(--ink-mute);
+  font-style: italic;
+  pointer-events: none;
+  opacity: 0.8;
+}
+
+/* ══ PREVIEW MODE ═══════════════════════════════════════════════════════ */
+body.preview-mode [contenteditable="true"] {
+  cursor: default; pointer-events: none;
+}
+body.preview-mode [contenteditable="true"]:hover,
+body.preview-mode [contenteditable="true"]:focus {
+  background: transparent; box-shadow: none;
+}
+body.preview-mode .edit-hint { display: none !important; }
+body.preview-mode .toolbar-center { display: none; }
+
+/* ══ PORTADA ════════════════════════════════════════════════════════════ */
+.cover {
+  position: relative;
+  background: var(--ink);
+  overflow: hidden;
+  min-height: 520px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+/* Fondo diagonal verde */
+.cover-bg-shape {
+  position: absolute;
+  bottom: -60px;
+  right: -60px;
+  width: 420px;
+  height: 420px;
+  background: var(--g-dark);
+  border-radius: 50%;
+  opacity: 0.22;
+  pointer-events: none;
+}
+.cover-bg-shape2 {
+  position: absolute;
+  top: -80px;
+  left: 38%;
+  width: 260px;
+  height: 260px;
+  background: var(--g-mid);
+  border-radius: 50%;
+  opacity: 0.12;
+  pointer-events: none;
+}
+
+/* Lado izquierdo — imagen + círculo */
+.cover-left {
+  position: relative;
+  overflow: hidden;
+  min-height: 520px;
+}
+.cover-img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: brightness(0.62) saturate(0.8);
+}
+/* Overlay diagonal */
+.cover-left::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(135deg, rgba(76,124,0,0.55) 0%, transparent 65%);
+  pointer-events: none;
+}
+/* Fallback sin imagen */
+.cover-left-fallback {
+  width: 100%; height: 100%;
+  min-height: 520px;
+  background: linear-gradient(150deg, #3a5f00 0%, #1a2e00 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Círculo grande decorativo sobre la imagen */
+.cover-circle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 200px; height: 200px;
+  border-radius: 50%;
+  background: var(--g-mid);
+  opacity: 0.82;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+.cover-circle-logo {
+  font-family: 'DM Serif Display', serif;
+  font-size: 26px;
+  color: var(--ink);
+  line-height: 1;
+}
+.cover-circle-sub {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink);
+  opacity: 0.7;
+}
+
+/* Textos flotantes sobre imagen */
+.cover-tag-img {
+  position: absolute;
+  top: 28px; left: 24px;
+  z-index: 3;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--g-light);
+  background: rgba(76,124,0,0.7);
+  padding: 5px 12px;
+  border-radius: 20px;
+}
+.cover-tag-bottom {
+  position: absolute;
+  bottom: 28px; left: 24px;
+  z-index: 3;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--g-light);
+  opacity: 0.8;
+}
+
+/* Lado derecho — texto */
+.cover-right {
+  padding: 48px 48px 44px 44px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  z-index: 2;
+}
+.cover-right-top { flex: 1; }
+.cover-eyebrow {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--g-mid);
+  margin-bottom: 18px;
+}
+.cover h1 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 38px;
+  line-height: 1.08;
+  color: var(--white);
+  font-weight: 400;
+  margin-bottom: 8px;
+  min-width: 200px;
+}
+.cover h1 em {
+  font-style: italic;
+  color: var(--g-mid);
+}
+.cover-subtitle {
+  font-size: 13.5px;
+  color: rgba(255,255,255,0.6);
+  line-height: 1.7;
+  margin-top: 14px;
+  min-width: 100px;
+}
+.cover-divider {
+  height: 2px;
+  width: 48px;
+  background: var(--g-mid);
+  margin: 24px 0;
+}
+.cover-meta-block { display: flex; flex-direction: column; gap: 14px; }
+.cover-meta { display: flex; flex-direction: column; gap: 2px; }
+.cover-meta-label {
+  font-size: 9.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: rgba(255,255,255,0.35);
+  font-weight: 700;
+}
+.cover-meta-val {
+  font-size: 13.5px;
+  color: #fff;
+  font-weight: 500;
+  min-width: 80px;
+}
+.cover-bottom-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.cover-badge {
+  background: var(--g-mid);
+  color: var(--ink);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 6px 16px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* ══ SECCIONES ══════════════════════════════════════════════════════════ */
+.section {
+  padding: 48px 60px;
+  border-bottom: 1px solid var(--border);
+}
+.section:last-child { border-bottom: none; }
+
+.section-eyebrow {
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--g-dark);
+  font-weight: 700;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.section-eyebrow::before {
+  content: '';
+  display: inline-block;
+  width: 20px; height: 2px;
+  background: var(--g-mid);
+}
+.section h2 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 26px;
+  font-weight: 400;
+  margin-bottom: 8px;
+  color: var(--ink);
+}
+.section-intro {
+  font-size: 13.5px;
+  color: var(--ink-soft);
+  max-width: 700px;
+  margin-bottom: 28px;
+  line-height: 1.75;
+}
+
+/* ══ EDIT HINT ══════════════════════════════════════════════════════════ */
+.edit-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  color: var(--g-dark);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  margin-bottom: 18px;
+  padding: 4px 12px;
+  background: var(--g-light);
+  border-radius: 20px;
+  border: 1px solid var(--g-mid);
+}
+
+/* ══ ABOUT / NOSOTROS ═══════════════════════════════════════════════════ */
+.about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: start; }
+.about-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.about-stat {
+  background: var(--white);
+  border-radius: 10px;
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--g-mid);
+}
+.about-stat-val {
+  font-family: 'DM Serif Display', serif;
+  font-size: 28px;
+  color: var(--g-dark);
+  display: block;
+  line-height: 1;
+  margin-bottom: 5px;
+}
+.about-stat-lbl { font-size: 11px; color: var(--ink-mute); line-height: 1.45; }
+.pillar-side { display: flex; flex-direction: column; gap: 10px; }
+.pillar-card {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  background: var(--white);
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.pillar-icon { font-size: 20px; flex-shrink: 0; }
+.pillar-name { font-size: 12px; font-weight: 700; color: var(--g-dark); margin-bottom: 3px; }
+.pillar-desc { font-size: 11px; color: var(--ink-mute); line-height: 1.55; }
+
+/* ══ RELEVAMIENTO ═══════════════════════════════════════════════════════ */
+.proceso-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+.proceso-field {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px 16px;
+}
+.proceso-field.full { grid-column: 1 / -1; }
+.proceso-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--ink-mute);
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.proceso-value {
+  font-size: 13px;
+  color: var(--ink);
+  min-height: 20px;
+  display: block;
+  line-height: 1.6;
+}
+.proceso-value.tall { min-height: 80px; }
+
+/* Paso a paso */
+.proceso-pasos { display: flex; flex-direction: column; gap: 0; }
+.proceso-paso { display: grid; grid-template-columns: 28px 1fr; gap: 0 14px; align-items: stretch; }
+.pp-line { display: flex; flex-direction: column; align-items: center; }
+.pp-dot {
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: var(--g-dark);
+  border: 2px solid var(--white);
+  box-shadow: 0 0 0 2px var(--g-dark);
+  flex-shrink: 0;
+  margin-top: 14px;
+  z-index: 1;
+}
+.pp-track { width: 2px; background: var(--g-light); flex: 1; margin-top: 2px; }
+.proceso-paso:last-child .pp-track { display: none; }
+.pp-content { padding: 10px 0 14px; }
+.pp-area {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--g-dark);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 3px;
+}
+.pp-desc { font-size: 12.5px; color: var(--ink-soft); line-height: 1.55; }
+
+/* Dolor cards */
+.dolor-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+.dolor-card {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  background: var(--white);
+  border-top: 3px solid var(--danger);
+}
+.dolor-num {
+  font-family: 'DM Serif Display', serif;
+  font-size: 28px;
+  color: #fecaca;
+  line-height: 1;
+  margin-bottom: 8px;
+  user-select: none;
+}
+.dolor-text { font-size: 12.5px; color: var(--ink-soft); min-height: 60px; display: block; }
+
+/* Problema items */
+.problema-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 11px 15px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  font-size: 13px;
+  color: var(--ink-soft);
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+.problema-item::before { content: '✕'; color: #dc2626; font-weight: 700; font-size: 12px; flex-shrink: 0; margin-top: 1px; }
+.problema-conclusion {
+  background: var(--g-dark);
+  color: #fff;
+  border-radius: 8px;
+  padding: 14px 18px;
+  font-size: 13px;
+  font-style: italic;
+  line-height: 1.6;
+}
+
+/* ══ FLUJO CONTAINER ════════════════════════════════════════════════════ */
+.flujo-svg-wrap {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  background: #18201a;
+  padding: 16px;
+}
+
+/* ══ MÓDULOS ════════════════════════════════════════════════════════════ */
+.modulos-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; }
+.modulo-card {
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  transition: border-color 0.2s;
+}
+.modulo-card.selected { border-color: var(--g-dark); }
+.modulo-header {
+  padding: 14px 16px 12px;
+  background: var(--g-dark);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.modulo-card.extra .modulo-header { background: var(--g-mid); }
+.modulo-icon { font-size: 20px; line-height: 1; }
+.modulo-name { font-size: 13px; font-weight: 600; color: #fff; }
+.modulo-body { padding: 14px 16px; background: var(--white); }
+.modulo-feature {
+  font-size: 12px;
+  color: var(--ink-soft);
+  padding: 4px 0;
+  border-bottom: 1px solid #eef4e0;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+.modulo-feature:last-child { border-bottom: none; }
+.modulo-feature::before { content: '✓'; color: var(--g-mid); font-weight: 700; font-size: 11px; flex-shrink: 0; margin-top: 1px; }
+.modulo-check {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink-mute);
+  cursor: pointer;
+  user-select: none;
+}
+.modulo-check input { cursor: pointer; accent-color: var(--g-dark); }
+.modulo-check.active { color: var(--g-dark); }
+.modulos-grid:not(.none-selected) .modulo-card:not(.selected) { opacity: 0.35; filter: grayscale(0.3); transition: opacity 0.2s; }
+.modulos-grid:not(.none-selected) .modulo-card:not(.selected):hover { opacity: 0.6; }
+
+/* ══ COMBOS ═════════════════════════════════════════════════════════════ */
+.combo-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; margin-bottom: 10px; }
+.combo-tab {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 5px 14px;
+  border-radius: 20px;
+  border: 1.5px solid var(--border);
+  background: var(--white);
+  color: var(--ink-mute);
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: 'Sora', sans-serif;
+}
+.combo-tab:hover { border-color: var(--g-mid); color: var(--g-dark); }
+.combo-tab.active { background: var(--g-dark); color: #fff; border-color: var(--g-dark); }
+#combo-desc {
+  font-size: 12px;
+  color: var(--g-dark);
+  padding: 10px 14px;
+  background: var(--g-light);
+  border-radius: 8px;
+  border: 1px solid var(--g-mid);
+  display: none;
+  margin-top: 8px;
+}
+.flujo-personalizado-note {
+  display: none;
+  background: var(--g-light);
+  border: 1px solid var(--g-mid);
+  border-radius: 8px;
+  padding: 14px 18px;
+  font-size: 13px;
+  color: var(--g-dark);
+  font-weight: 500;
+  margin-top: 12px;
+}
+.flujo-personalizado-note.visible { display: block; }
+#modulos-section.hidden-flujo { display: none; }
+
+/* ══ ALCANCE TABLE ══════════════════════════════════════════════════════ */
+.alcance-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.alcance-table thead tr { background: var(--g-dark); }
+.alcance-table th {
+  color: #fff;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 700;
+  padding: 11px 14px;
+  text-align: left;
+}
+.alcance-table td { padding: 9px 14px; border-bottom: 1px solid #eef4e0; color: var(--ink-soft); vertical-align: middle; }
+.alcance-table tr:last-child td { border-bottom: none; }
+.alcance-table tr:nth-child(even) td { background: var(--surface); }
+.tag-in {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+  background: var(--g-light);
+  color: var(--g-dark);
+  white-space: nowrap;
+}
+.tag-out {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+  background: #fef2f2;
+  color: #dc2626;
+  white-space: nowrap;
+}
+
+/* ══ INVERSIÓN / ECONÓMICO ══════════════════════════════════════════════ */
+.eco-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 14px; }
+.eco-table thead tr { background: var(--g-dark); }
+.eco-table th { color: #fff; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; padding: 11px 14px; text-align: left; }
+.eco-table td { padding: 9px 14px; border-bottom: 1px solid #eef4e0; color: var(--ink-soft); vertical-align: middle; }
+.eco-table tr:last-child td { border-bottom: none; }
+.eco-table tr:nth-child(even) td { background: var(--surface); }
+.eco-table .total-row td { background: var(--g-light) !important; color: var(--g-dark); font-weight: 700; font-size: 14px; }
+.eco-price { font-family: 'DM Serif Display', serif; font-size: 15px; color: var(--g-dark); }
+
+.inversion-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 16px; }
+.inv-card {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px;
+  text-align: center;
+  background: var(--white);
+}
+.inv-card.highlight { background: var(--g-dark); border-color: var(--g-dark); }
+.inv-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-mute); font-weight: 700; margin-bottom: 8px; }
+.inv-card.highlight .inv-label { color: rgba(255,255,255,0.6); }
+.inv-value { font-family: 'DM Serif Display', serif; font-size: 24px; color: var(--g-dark); display: block; line-height: 1.1; margin-bottom: 5px; }
+.inv-card.highlight .inv-value { color: var(--g-light); }
+.inv-sub { font-size: 11px; color: var(--ink-mute); }
+.inv-card.highlight .inv-sub { color: rgba(255,255,255,0.55); }
+.inv-note {
+  font-size: 12.5px;
+  color: var(--ink-soft);
+  background: var(--g-light);
+  border: 1px solid var(--g-mid);
+  border-radius: 8px;
+  padding: 14px 18px;
+  line-height: 1.65;
+  min-height: 48px;
+}
+
+/* ══ TIMELINE ═══════════════════════════════════════════════════════════ */
+.timeline { display: flex; flex-direction: column; gap: 0; }
+.tl-row { display: grid; grid-template-columns: 80px 30px 1fr; gap: 0 14px; align-items: stretch; }
+.tl-week { font-size: 11px; font-weight: 700; color: var(--g-dark); text-align: right; padding-top: 14px; }
+.tl-line { display: flex; flex-direction: column; align-items: center; }
+.tl-dot { width: 14px; height: 14px; border-radius: 50%; background: var(--g-dark); border: 2px solid #fff; box-shadow: 0 0 0 2px var(--g-dark); flex-shrink: 0; margin-top: 14px; z-index: 1; }
+.tl-dot.gold { background: var(--g-mid); box-shadow: 0 0 0 2px var(--g-mid); }
+.tl-track { width: 2px; background: var(--g-light); flex: 1; margin-top: 2px; }
+.tl-row:last-child .tl-track { display: none; }
+.tl-content { padding: 12px 0 16px; }
+.tl-title { font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 3px; }
+.tl-desc { font-size: 12px; color: var(--ink-mute); min-height: 18px; }
+
+/* ══ PRÓXIMOS PASOS ══════════════════════════════════════════════════════ */
+.pasos-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.paso-card {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px;
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  background: var(--white);
+}
+.paso-num {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: var(--g-dark);
+  color: #fff;
+  font-family: 'DM Serif Display', serif;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.paso-title { font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 4px; }
+.paso-desc { font-size: 12px; color: var(--ink-mute); min-height: 18px; }
+
+/* ══ PASOS ACTIONS ══════════════════════════════════════════════════════ */
+.pasos-actions { display: flex; gap: 6px; margin-top: 8px; margin-bottom: 4px; align-items: center; }
+
+/* Botones + / − inline junto al título de sección */
+.section-inline-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+  margin-bottom: 8px;
+  gap: 12px;
+}
+.btn-inline {
+  font-family: 'Sora', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 11px;
+  border-radius: 20px;
+  border: 1.5px solid var(--border);
+  background: var(--white);
+  color: var(--ink-mute);
+  cursor: pointer;
+  transition: all 0.15s;
+  line-height: 1.4;
+}
+.btn-inline:hover {
+  border-color: var(--g-mid);
+  color: var(--g-dark);
+  background: var(--g-light);
+}
+
+
+/* ══ FOOTER ══════════════════════════════════════════════════════════════ */
+.footer {
+  background: var(--ink);
+  padding: 26px 60px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.footer-brand {
+  font-family: 'DM Serif Display', serif;
+  font-size: 20px;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.footer-brand .dot { width: 18px; height: 18px; background: var(--g-mid); border-radius: 50%; }
+.footer-brand span { color: var(--g-mid); }
+.footer-contact { font-size: 12px; color: rgba(255,255,255,0.5); text-align: right; }
+.footer-contact strong { color: #fff; display: block; margin-bottom: 2px; }
+
+/* ══ HEADER SECTION SURFACE ══════════════════════════════════════════════ */
+.section.surface { background: var(--surface); }
+/* En web, continuation se ve como parte del mismo bloque */
+.section-continuation {
+  border-top: 2px dashed var(--border);
+  margin-top: 0;
+}
+
+
+
+
+</style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+
+<!-- ══ TOOLBAR ══ -->
+<div id="toolbar">
+  <div class="toolbar-brand">
+    <span class="logo-dot"></span>
+    Apro<span>va</span> · Propuesta comercial
+  </div>
+  <div class="toolbar-center">
+    <div class="edit-dot"></div>
+    Haz clic en cualquier campo para editar
+  </div>
+  <div class="toolbar-actions">
+    <button class="btn-toolbar btn-preview" onclick="togglePreview()">👁 Vista prospecto</button>
+    <button class="btn-toolbar btn-print" id="btn-pdf" onclick="generarPDF()">⬇ Guardar como PDF</button>
+  </div>
+</div>
+
+<div class="page">
+
+<!-- ══ PORTADA ══ -->
+<div class="cover">
+  <!-- Lado izquierdo: imagen + círculo decorativo -->
+  <div class="cover-left">
+    <!-- Si tenés imagen, reemplazá el div de abajo por <img class="cover-img" src="tu-imagen.jpg"> -->
+    <div class="cover-left-fallback">
+      <!-- Patrón de puntos decorativos SVG inline -->
+      <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" style="position:absolute;top:0;left:0;opacity:0.15">
+        <defs>
+          <pattern id="dots" x="0" y="0" width="28" height="28" patternUnits="userSpaceOnUse">
+            <circle cx="4" cy="4" r="2" fill="#8AC542"/>
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#dots)"/>
+      </svg>
+      <!-- Círculos decorativos fondo -->
+      <svg width="280" height="280" viewBox="0 0 280 280" xmlns="http://www.w3.org/2000/svg" style="position:absolute;opacity:0.18">
+        <circle cx="140" cy="140" r="130" fill="none" stroke="#8AC542" stroke-width="1.5"/>
+        <circle cx="140" cy="140" r="100" fill="none" stroke="#8AC542" stroke-width="1"/>
+        <circle cx="140" cy="140" r="70" fill="none" stroke="#8AC542" stroke-width="0.5"/>
+      </svg>
+    </div>
+
+    <!-- Círculo verde central (logo) -->
+    <div class="cover-circle">
+      <span class="cover-circle-logo">Apro<span style="color:var(--ink);opacity:0.5">va</span></span>
+      <span class="cover-circle-sub">Cloud BPM</span>
+    </div>
+
+    <!-- Tags sobre imagen -->
+    <div class="cover-tag-img">Propuesta comercial</div>
+    <div class="cover-tag-bottom">APG Consulting · aprovacloud.com</div>
+  </div>
+
+  <!-- Fondos decorativos -->
+  <div class="cover-bg-shape"></div>
+  <div class="cover-bg-shape2"></div>
+
+  <!-- Lado derecho: texto -->
+  <div class="cover-right">
+    <div class="cover-right-top">
+      <div class="cover-eyebrow">Solución de automatización</div>
+      <h1 contenteditable="true" data-placeholder="Nombre del prospecto / empresa">CTH – Corporación Tecnológica del Hogar</h1>
+      <div class="cover-divider"></div>
+      <div class="cover-subtitle" contenteditable="true" data-placeholder="Descripción breve del proyecto o solución propuesta">
+        Automatización del proceso de recepción, validación y aprobación de facturas de reembolso y proveedores mediante plataforma Aprova + n8n + IA.
+      </div>
+    </div>
+
+    <div>
+      <div class="cover-meta-block">
+        <div class="cover-meta">
+          <span class="cover-meta-label">Preparado para</span>
+          <span class="cover-meta-val" contenteditable="true" data-placeholder="Nombre del contacto">Andrea Pichucho · CTH</span>
+        </div>
+        <div class="cover-meta">
+          <span class="cover-meta-label">Ejecutivo de cuenta</span>
+          <span class="cover-meta-val" contenteditable="true" data-placeholder="Tu nombre y cargo">Lucas Vallejo · Gerente Regional Comercial</span>
+        </div>
+      </div>
+      <div class="cover-bottom-row">
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div class="cover-meta">
+            <span class="cover-meta-label">Fecha de emisión</span>
+            <span class="cover-meta-val" id="fecha-auto" contenteditable="true" data-placeholder="DD de mes de AAAA"></span>
+          </div>
+          <div class="cover-meta">
+            <span class="cover-meta-label">Validez de la propuesta</span>
+            <span class="cover-meta-val" contenteditable="true" data-placeholder="30 días">30 días</span>
+          </div>
+        </div>
+        <div class="cover-badge">Confidencial</div>
+      </div>
+    </div>
+  </div>
+</div><!-- /cover -->
+
+
+<!-- ══ SOBRE NOSOTROS ══ -->
+<div class="section surface">
+  <div class="section-eyebrow">00 · Sobre APG Consulting</div>
+  <h2>Somos el socio estratégico de tu organización</h2>
+  <p class="section-intro" contenteditable="true">APG Consulting es una empresa multinacional con 30 años de experiencia en desarrollo de software y soluciones a la medida. Presencia en Argentina, Bolivia, Colombia, Costa Rica, Ecuador, España y Perú. Galardonada por Microsoft como Software Plus Services Partner of the Year para Latinoamérica y Caribe.</p>
+  <div class="about-grid">
+    <div class="about-stats">
+      <div class="about-stat"><span class="about-stat-val">30</span><span class="about-stat-lbl">Años de experiencia en transformación digital</span></div>
+      <div class="about-stat"><span class="about-stat-val">+2000</span><span class="about-stat-lbl">Clientes implementados en Latinoamérica</span></div>
+      <div class="about-stat"><span class="about-stat-val">7</span><span class="about-stat-lbl">Países con presencia activa</span></div>
+      <div class="about-stat"><span class="about-stat-val" style="font-size:14px;line-height:1.3">ISO<br>9001 · 27001</span><span class="about-stat-lbl">Certificaciones de calidad y seguridad</span></div>
+    </div>
+    <div class="pillar-side">
+      <div class="pillar-card"><div class="pillar-icon">🎯</div><div><div class="pillar-name">Personalización</div><div class="pillar-desc">Aprova se adapta a tus reglas de negocio reales. No al revés.</div></div></div>
+      <div class="pillar-card"><div class="pillar-icon">📊</div><div><div class="pillar-name">Indicadores</div><div class="pillar-desc">Dashboards, estados, notificaciones y trazabilidad en tiempo real de cada proceso.</div></div></div>
+      <div class="pillar-card"><div class="pillar-icon">🤖</div><div><div class="pillar-name">IA + n8n</div><div class="pillar-desc">Extracción automática de datos con OCR, validaciones inteligentes e integraciones vía n8n.</div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ RELEVAMIENTO 01a: datos generales ══ -->
+<div class="section">
+  <div class="section-eyebrow">01 · Relevamiento del proceso</div>
+  <h2>Proceso actual del cliente</h2>
+  <p class="section-intro" contenteditable="true">Relevamiento realizado el 21/05/2026 con Andrea Pichucho, Fabián Vásquez y Edgar Pérez (CTH) y Matías Cherepinsky y Lucas Vallejo (APG). Se documentó el flujo actual de recepción y aprobación de facturas de reembolso y proveedores.</p>
+  <div class="edit-hint">✏ Completa o ajusta los campos según el relevamiento real</div>
+
+  <div class="proceso-grid">
+    <div class="proceso-field"><div class="proceso-label">Organización</div><span class="proceso-value" contenteditable="true">CTH – Corporación Tecnológica del Hogar</span></div>
+    <div class="proceso-field"><div class="proceso-label">País / Ciudad</div><span class="proceso-value" contenteditable="true">Ecuador</span></div>
+    <div class="proceso-field"><div class="proceso-label">Contacto principal</div><span class="proceso-value" contenteditable="true">Andrea Pichucho · Fabián Vásquez · Edgar Pérez</span></div>
+    <div class="proceso-field"><div class="proceso-label">Volumen estimado</div><span class="proceso-value" contenteditable="true">~5 facturas de reembolso por día · múltiples soportes por factura</span></div>
+    <div class="proceso-field full"><div class="proceso-label">Situación actual — cómo llegan las facturas hoy</div><span class="proceso-value tall" contenteditable="true">El banco envía por correo un ZIP + un Excel. El ZIP contiene el PDF de la factura madre y los documentos soporte. El Excel tiene los datos estructurados (N° factura, crédito, proveedor, montos). El equipo descarga manualmente, valida en Excel y deriva a Legales por mail. No hay sistema central, no hay detección de duplicados ni de Red Flags.</span></div>
+    <div class="proceso-field full"><div class="proceso-label">Sistemas involucrados</div><span class="proceso-value" contenteditable="true">SRI (sistema interno de CTH) · ERP de CTH vía Web Services · SIAT (deseable) · Servidor propio de CTH con WS disponibles</span></div>
+  </div>
+</div>
+
+<!-- ══ RELEVAMIENTO 01b: paso a paso + dolores ══ -->
+<div class="section section-continuation">
+  <div class="section-eyebrow">01 · Relevamiento — paso a paso y dolores</div>
+  <h2>Diagnóstico detallado del proceso</h2>
+
+  <div class="section-inline-actions" style="margin-top:4px;">
+    <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--ink-mute);">Paso a paso del proceso actual</div>
+    <div class="pasos-actions" style="margin:0;">
+      <button class="btn-inline" onclick="addPasoActual()">+ Paso</button>
+      <button class="btn-inline" onclick="removePasoActual()">− Quitar</button>
+    </div>
+  </div>
+  <div class="proceso-pasos" id="pasos-actual">
+    <div class="proceso-paso">
+      <div class="pp-line"><div class="pp-dot" style="background:#dc2626;box-shadow:0 0 0 2px #dc2626"></div><div class="pp-track"></div></div>
+      <div class="pp-content"><div class="pp-area" contenteditable="true">Recepción por correo</div><div class="pp-desc" contenteditable="true">El banco envía un mail con un ZIP adjunto. Dentro: PDF de la factura madre + documentos soporte. Adjunto o separado: Excel con datos del crédito, proveedor y montos. Sin sistema de recepción formal.</div></div>
+    </div>
+    <div class="proceso-paso">
+      <div class="pp-line"><div class="pp-dot" style="background:#dc2626;box-shadow:0 0 0 2px #dc2626"></div><div class="pp-track"></div></div>
+      <div class="pp-content"><div class="pp-area" contenteditable="true">Descompresión y clasificación manual</div><div class="pp-desc" contenteditable="true">Un operador descarga el ZIP, separa los archivos y clasifica manualmente si es factura de reembolso/reposición o factura de proveedor común. Sin validación automática de RUC ni de fideicomiso.</div></div>
+    </div>
+    <div class="proceso-paso">
+      <div class="pp-line"><div class="pp-dot" style="background:#dc2626;box-shadow:0 0 0 2px #dc2626"></div><div class="pp-track"></div></div>
+      <div class="pp-content"><div class="pp-area" contenteditable="true">Validación manual en Excel</div><div class="pp-desc" contenteditable="true">Se cruzan los datos del Excel contra el sistema: RUC del proveedor, existencia de fideicomiso, cuadre de montos entre factura madre e hijas. Sin detección de duplicados ni alertas de Red Flag.</div></div>
+    </div>
+    <div class="proceso-paso">
+      <div class="pp-line"><div class="pp-dot" style="background:#dc2626;box-shadow:0 0 0 2px #dc2626"></div><div class="pp-track"></div></div>
+      <div class="pp-content"><div class="pp-area" contenteditable="true">Derivación a Legales por correo</div><div class="pp-desc" contenteditable="true">Se envía correo a Legales con los archivos adjuntos. Sin SLA formal ni escalamiento si Legales no responde. Legales aprueba o rechaza por correo, sin registro trazable en el sistema.</div></div>
+    </div>
+    <div class="proceso-paso">
+      <div class="pp-line"><div class="pp-dot" style="background:#dc2626;box-shadow:0 0 0 2px #dc2626"></div><div class="pp-track"></div></div>
+      <div class="pp-content"><div class="pp-area" contenteditable="true">Pago en SRI y notificación al banco</div><div class="pp-desc" contenteditable="true">Contabilidad ejecuta el pago en el SRI. Se adjunta el comprobante manualmente y se notifica al banco por correo suelto. Un comprobante puede cubrir múltiples facturas sin vínculo automatizado entre ellos.</div></div>
+    </div>
+  </div>
+
+  <div class="section-inline-actions" style="margin-top:24px;">
+    <div class="edit-hint" style="margin-bottom:0;">✏ Principales dolores identificados en el relevamiento</div>
+    <div class="pasos-actions" id="dolor-actions" style="margin:0;">
+      <button class="btn-inline" onclick="addDolor()">+ Dolor</button>
+      <button class="btn-inline" onclick="removeDolor()">− Quitar</button>
+    </div>
+  </div>
+  <div class="dolor-grid" id="dolor-grid" style="margin-top:8px">
+    <div class="dolor-card"><div class="dolor-num">01</div><span class="dolor-text" contenteditable="true">Sin detección de duplicados: una misma factura soporte puede cargarse múltiples veces sin que el sistema lo detecte.</span></div>
+    <div class="dolor-card"><div class="dolor-num">02</div><span class="dolor-text" contenteditable="true">Sin alertas de Red Flag: mismo proveedor, mismo monto, misma etapa procesal en los últimos meses pasa sin advertencia a Legales.</span></div>
+    <div class="dolor-card"><div class="dolor-num">03</div><span class="dolor-text" contenteditable="true">Sin SLA en Legales: si no responden, el proceso se traba sin escalamiento automático a jefatura.</span></div>
+  </div>
+</div>
+
+<!-- ══ SOLUCIÓN PROPUESTA (campo libre) ══ -->
+<div class="section surface">
+  <div class="section-eyebrow">02 · Solución propuesta</div>
+  <h2>Cómo Aprova resuelve este proceso</h2>
+  <p class="section-intro" contenteditable="true">Describe aquí el enfoque de la solución, el flujo propuesto, las integraciones involucradas y los resultados esperados para este cliente.</p>
+  <div class="edit-hint">✏ Campo libre — escribe aquí todo el detalle de la propuesta</div>
+
+  <div class="propuesta-libre-wrap">
+    <div
+      class="propuesta-libre"
+      contenteditable="true"
+      data-placeholder="Describe la solución propuesta: flujo de trabajo, módulos involucrados, integraciones, validaciones, automatizaciones, roles de aprobación y cualquier detalle relevante para este cliente. Este campo se expande automáticamente con el contenido."
+    ></div>
+  </div>
+</div>
+
+<style>
+.propuesta-libre-wrap {
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  background: var(--white);
+  overflow: hidden;
+  transition: border-color 0.18s, box-shadow 0.18s;
+}
+.propuesta-libre-wrap:focus-within {
+  border-color: var(--g-dark);
+  box-shadow: 0 0 0 3px rgba(76,124,0,0.1);
+}
+.propuesta-libre {
+  font-size: 13.5px;
+  color: var(--ink);
+  line-height: 1.8;
+  padding: 24px 28px;
+  min-height: 96px;
+  outline: none;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.propuesta-libre:empty::before {
+  content: attr(data-placeholder);
+  color: var(--ink-mute);
+  font-style: italic;
+  pointer-events: none;
+}
+/* anular el hover/focus global en este campo — el wrap lo gestiona */
+.propuesta-libre:hover,
+.propuesta-libre:focus {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+</style>
+
+
+<!-- ══ SOLUCIÓN / MÓDULOS ══ -->
+<div class="section">
+  <div class="section-eyebrow">03 · Solución propuesta</div>
+  <h2>Módulos incluidos en esta propuesta</h2>
+  <p class="section-intro">Selecciona un combo estándar de Aprova o elige "Flujo personalizado" para proyectos a medida. En flujo personalizado, el alcance se define por el proceso relevado, no por módulos estándar.</p>
+  <div class="edit-hint">✏ Selecciona un combo · O marca módulos individuales · O elige Flujo personalizado</div>
+
+  <div class="combo-tabs">
+    <span style="font-size:11px;font-weight:600;color:var(--ink-mute);align-self:center;margin-right:4px;">Paquete:</span>
+    <button class="combo-tab" onclick="selectCombo('combo-none',this)">Ninguno</button>
+    <button class="combo-tab" onclick="selectCombo('combo-proveedores',this)">Control de Proveedores</button>
+    <button class="combo-tab" onclick="selectCombo('combo-p2p',this)">Procure-to-Pay</button>
+    <button class="combo-tab" onclick="selectCombo('combo-interna',this)">Gestión Interna</button>
+    <button class="combo-tab" onclick="selectCombo('combo-finanzas',this)">Finanzas Operativas</button>
+    <button class="combo-tab" onclick="selectCombo('combo-ia',this)">Inteligencia Artificial</button>
+    <button class="combo-tab active" onclick="selectCombo('combo-personalizado',this)">⚙ Flujo personalizado</button>
+  </div>
+  <div id="combo-desc"></div>
+
+  <div class="flujo-personalizado-note visible" id="flujo-personalizado-note">
+    ⚙ Esta propuesta corresponde a un <strong>flujo personalizado</strong>. El alcance se define por el proceso relevado con el cliente, no por módulos estándar. Ver sección de Relevamiento y Flujo con Aprova.
+  </div>
+
+  <div id="modulos-section" class="hidden-flujo" style="margin-top:20px;">
+    <div class="modulos-grid" id="modulos-grid">
+      <div class="modulo-card" id="mod-proveedores">
+        <div class="modulo-header"><div class="modulo-icon">🏭</div><div class="modulo-name">Gestión de Proveedores</div></div>
+        <div class="modulo-body">
+          <div class="modulo-feature" contenteditable="true">Licitaciones y contratos</div>
+          <div class="modulo-feature" contenteditable="true">Vinculación de proveedores</div>
+          <div class="modulo-feature" contenteditable="true">Órdenes de compra</div>
+          <div class="modulo-feature" contenteditable="true">Facturas y certificados de retención</div>
+          <div class="modulo-feature" contenteditable="true">Evaluación de proveedores</div>
+          <div class="modulo-feature" style="color:var(--g-dark);font-weight:600" contenteditable="true">🤖 IA: Lectura automática de documentos</div>
+          <label class="modulo-check" onclick="toggleModulo('mod-proveedores',this)"><input type="checkbox"> Incluido en esta propuesta</label>
+        </div>
+      </div>
+      <div class="modulo-card" id="mod-rrhh">
+        <div class="modulo-header"><div class="modulo-icon">👥</div><div class="modulo-name">Recursos Humanos</div></div>
+        <div class="modulo-body">
+          <div class="modulo-feature" contenteditable="true">Recruiting end-to-end</div>
+          <div class="modulo-feature" contenteditable="true">Administración de legajos</div>
+          <div class="modulo-feature" contenteditable="true">Plan de capacitaciones</div>
+          <div class="modulo-feature" contenteditable="true">Comunicación interna</div>
+          <div class="modulo-feature" contenteditable="true">Novedades de payroll</div>
+          <div class="modulo-feature" style="color:var(--g-dark);font-weight:600" contenteditable="true">🤖 IA: Carga de CVs desde mail</div>
+          <label class="modulo-check" onclick="toggleModulo('mod-rrhh',this)"><input type="checkbox"> Incluido en esta propuesta</label>
+        </div>
+      </div>
+      <div class="modulo-card" id="mod-cobranzas">
+        <div class="modulo-header"><div class="modulo-icon">💰</div><div class="modulo-name">Cobranzas</div></div>
+        <div class="modulo-body">
+          <div class="modulo-feature" contenteditable="true">Automatización de recibos bancarios</div>
+          <div class="modulo-feature" contenteditable="true">Importación de facturas COMFIAR</div>
+          <div class="modulo-feature" contenteditable="true">Importación de facturas (otros medios)</div>
+          <div class="modulo-feature" contenteditable="true">Seguimiento y alertas de cobranza</div>
+          <div class="modulo-feature" contenteditable="true">Comunicación interna integrada</div>
+          <label class="modulo-check" onclick="toggleModulo('mod-cobranzas',this)"><input type="checkbox"> Incluido en esta propuesta</label>
+        </div>
+      </div>
+      <div class="modulo-card" id="mod-viaticos">
+        <div class="modulo-header"><div class="modulo-icon">📊</div><div class="modulo-name">Viáticos y Presupuestos</div></div>
+        <div class="modulo-body">
+          <div class="modulo-feature" contenteditable="true">Carga de tickets para rendición</div>
+          <div class="modulo-feature" contenteditable="true">Aprobación de gastos</div>
+          <div class="modulo-feature" contenteditable="true">Control presupuestario</div>
+          <div class="modulo-feature" contenteditable="true">Alertas de desvío</div>
+          <div class="modulo-feature" contenteditable="true">Reportes de gastos por área</div>
+          <label class="modulo-check" onclick="toggleModulo('mod-viaticos',this)"><input type="checkbox"> Incluido en esta propuesta</label>
+        </div>
+      </div>
+      <div class="modulo-card extra" id="mod-extra1">
+        <div class="modulo-header"><div class="modulo-icon">⚙️</div><div class="modulo-name">Add-on personalizado</div></div>
+        <div class="modulo-body">
+          <div class="modulo-feature" contenteditable="true">Funcionalidad específica del cliente</div>
+          <div class="modulo-feature" contenteditable="true">Integraciones a medida</div>
+          <div class="modulo-feature" contenteditable="true">Reportes personalizados</div>
+          <label class="modulo-check" onclick="toggleModulo('mod-extra1',this)"><input type="checkbox"> Incluido en esta propuesta</label>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ALCANCE ══ -->
+<div class="section surface">
+  <div class="section-eyebrow">04 · Alcance y exclusiones</div>
+  <h2>¿Qué incluye esta propuesta?</h2>
+  <p class="section-intro" contenteditable="true">Todo lo que está incluido en el alcance base. Los ítems marcados como "no incluido" pueden cotizarse por separado.</p>
+  <div class="edit-hint">✏ Edita cada celda para ajustar al alcance real</div>
+  <table class="alcance-table">
+    <thead><tr><th style="width:45%">Ítem</th><th style="width:18%">Estado</th><th>Detalle</th></tr></thead>
+    <tbody>
+      <tr><td contenteditable="true">Configuración y parametrización del flujo</td><td><span class="tag-in">INCLUIDO</span></td><td contenteditable="true">Según el relevamiento realizado con el equipo de CTH</td></tr>
+      <tr><td contenteditable="true">Integración n8n para recepción del ZIP</td><td><span class="tag-in">INCLUIDO</span></td><td contenteditable="true">Automatización del canal de entrada desde el banco</td></tr>
+      <tr><td contenteditable="true">Motor IA / OCR para lectura de documentos</td><td><span class="tag-in">INCLUIDO</span></td><td contenteditable="true">Extracción de datos de factura madre y soportes</td></tr>
+      <tr><td contenteditable="true">Validaciones: RUC, duplicados y Red Flag</td><td><span class="tag-in">INCLUIDO</span></td><td contenteditable="true">Reglas configuradas según lógica de negocio de CTH</td></tr>
+      <tr><td contenteditable="true">Portal de aprobación para Legales</td><td><span class="tag-in">INCLUIDO</span></td><td contenteditable="true">Vista, firma digital y registro trazable</td></tr>
+      <tr><td contenteditable="true">Notificaciones y SLA configurables</td><td><span class="tag-in">INCLUIDO</span></td><td contenteditable="true">Alertas por mail y escalamiento automático</td></tr>
+      <tr><td contenteditable="true">Soporte técnico post-implementación</td><td><span class="tag-in">INCLUIDO</span></td><td contenteditable="true">30 días de soporte incluido en el período inicial</td></tr>
+      <tr><td contenteditable="true">Migración de datos históricos</td><td><span class="tag-out">NO INCLUIDO</span></td><td contenteditable="true">Cotización separada si se requiere</td></tr>
+      <tr><td contenteditable="true">Integración con SRI / ERP</td><td><span class="tag-out">NO INCLUIDO</span></td><td contenteditable="true">Se cotiza en Fase 2 según complejidad técnica</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ══ INVERSIÓN ══ -->
+<div class="section">
+  <div class="section-eyebrow">05 · Condiciones económicas</div>
+  <h2>Resumen de inversión</h2>
+  <p class="section-intro" contenteditable="true">Los valores corresponden al alcance definido. No incluyen IVA local. Validez de la oferta: 30 días desde la fecha de emisión. La propuesta contempla evolutivos modulares.</p>
+  <div class="edit-hint">✏ Completa los valores según el cierre comercial</div>
+
+  <div style="margin-bottom:10px;font-size:12px;font-weight:600;color:var(--ink-mute);">
+    Paquete: <span contenteditable="true" style="color:var(--g-dark);border-bottom:1px dashed var(--g-mid);padding:0 4px;">Automatización de facturas de reembolso y proveedores · Aprova + n8n + IA</span>
+  </div>
+
+  <table class="eco-table">
+    <thead><tr><th style="width:38%">Ítem</th><th style="width:20%">Precio</th><th>Detalle</th></tr></thead>
+    <tbody id="eco-tbody">
+      <tr><td contenteditable="true">Fase 1 · Implementación Core</td><td><span class="eco-price" contenteditable="true">A definir</span></td><td contenteditable="true">Recepción ZIP, IA/OCR, validaciones, Legales, Contabilidad, notificaciones</td></tr>
+      <tr><td contenteditable="true">Fase 2 · Integración SRI + Proveedores</td><td><span class="eco-price" contenteditable="true">A definir</span></td><td contenteditable="true">WS SRI, sincronización proveedores, SIAT (deseable), evolutivos</td></tr>
+      <tr><td contenteditable="true">Licencia Aprova mensual</td><td><span class="eco-price" contenteditable="true">A definir</span></td><td contenteditable="true">Por usuario nominal · facturación mensual adelantada</td></tr>
+      <tr><td contenteditable="true">Mesa de Servicio (Help Desk)</td><td><span class="eco-price" contenteditable="true">Incluido</span></td><td contenteditable="true">Soporte técnico, cambios menores y seguimiento vía plataforma VIGA</td></tr>
+      <tr class="total-row"><td><strong>Total estimado</strong></td><td><strong contenteditable="true">A definir</strong></td><td contenteditable="true">Sujeto a validación técnica · propuesta diseñada en evolutivos</td></tr>
+    </tbody>
+  </table>
+  <div style="display:flex;gap:8px;margin-bottom:18px;">
+    <button class="btn-toolbar btn-preview" style="font-size:11px;padding:4px 12px;" onclick="addEcoRow()">+ Agregar ítem</button>
+    <button class="btn-toolbar btn-preview" style="font-size:11px;padding:4px 12px;" onclick="removeEcoRow()">− Quitar ítem</button>
+  </div>
+
+  <div class="inversion-grid">
+    <div class="inv-card"><div class="inv-label">Implementación Fase 1</div><span class="inv-value" contenteditable="true">A definir</span><div class="inv-sub" contenteditable="true">Pago único al inicio</div></div>
+    <div class="inv-card highlight"><div class="inv-label">Licencia mensual</div><span class="inv-value" contenteditable="true">A definir</span><div class="inv-sub" contenteditable="true">por mes · usuarios nominales</div></div>
+    <div class="inv-card"><div class="inv-label">Fase 2 · Integraciones</div><span class="inv-value" contenteditable="true">A definir</span><div class="inv-sub" contenteditable="true">Evolutivo · etapa 2</div></div>
+  </div>
+  <div class="inv-note" contenteditable="true">💡 Los montos no incluyen IVA. La propuesta está diseñada para crecer en etapas: Fase 1 cubre el flujo core de reembolsos y Fase 2 agrega las integraciones con SRI y el ERP. Tiempo mínimo de servicio: 12 meses. Próximos pasos: validación técnica con CTH → OK del cliente → propuesta comercial final.</div>
+</div>
+
+<!-- ══ TIMELINE ══ -->
+<div class="section surface">
+  <div class="section-eyebrow">06 · Plan de implementación</div>
+  <h2>Cronograma estimado</h2>
+  <p class="section-intro" contenteditable="true">Una vez firmado el acuerdo, este es el plan de trabajo propuesto.</p>
+  <div class="edit-hint">✏ Edita semanas y actividades según el proyecto</div>
+  <div class="timeline">
+    <div class="tl-row">
+      <div class="tl-week">Semana 1</div>
+      <div class="tl-line"><div class="tl-dot"></div><div class="tl-track"></div></div>
+      <div class="tl-content"><div class="tl-title" contenteditable="true">Kick-off y configuración inicial</div><div class="tl-desc" contenteditable="true">Reunión de inicio · accesos · configuración de entorno y usuarios</div></div>
+    </div>
+    <div class="tl-row">
+      <div class="tl-week">Semana 2</div>
+      <div class="tl-line"><div class="tl-dot"></div><div class="tl-track"></div></div>
+      <div class="tl-content"><div class="tl-title" contenteditable="true">Modelado y configuración de flujos</div><div class="tl-desc" contenteditable="true">Configuración de módulos · revisión de flujos con el cliente · ajustes</div></div>
+    </div>
+    <div class="tl-row">
+      <div class="tl-week">Semana 3</div>
+      <div class="tl-line"><div class="tl-dot"></div><div class="tl-track"></div></div>
+      <div class="tl-content"><div class="tl-title" contenteditable="true">Pruebas y capacitación</div><div class="tl-desc" contenteditable="true">Pruebas con usuarios clave · sesiones de capacitación · correcciones</div></div>
+    </div>
+    <div class="tl-row">
+      <div class="tl-week">Semana 4</div>
+      <div class="tl-line"><div class="tl-dot gold"></div><div class="tl-track"></div></div>
+      <div class="tl-content"><div class="tl-title" contenteditable="true">🚀 Go-live</div><div class="tl-desc" contenteditable="true">Lanzamiento oficial · activación de usuarios · acompañamiento inicial</div></div>
+    </div>
+    <div class="tl-row">
+      <div class="tl-week">Mes 2</div>
+      <div class="tl-line"><div class="tl-dot" style="background:var(--g-mid);box-shadow:0 0 0 2px var(--g-mid)"></div></div>
+      <div class="tl-content"><div class="tl-title" contenteditable="true">Seguimiento y soporte</div><div class="tl-desc" contenteditable="true">30 días de soporte incluido · revisión de adopción · optimizaciones</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PRÓXIMOS PASOS ══ -->
+<div class="section">
+  <div class="section-eyebrow">07 · Próximos pasos</div>
+  <h2>¿Cómo avanzamos?</h2>
+  <p class="section-intro" contenteditable="true">Para comenzar, estos son los pasos que seguiremos juntos.</p>
+
+  <div class="pasos-grid">
+    <div class="paso-card">
+      <div class="paso-num">1</div>
+      <div class="paso-body">
+        <div class="paso-title" contenteditable="true">Revisión y aprobación de propuesta</div>
+        <div class="paso-desc" contenteditable="true">Confirma el alcance y resuelve dudas pendientes en una llamada de cierre</div>
+      </div>
+    </div>
+    <div class="paso-card">
+      <div class="paso-num">2</div>
+      <div class="paso-body">
+        <div class="paso-title" contenteditable="true">Firma de contrato</div>
+        <div class="paso-desc" contenteditable="true">Envío y firma digital del acuerdo de servicio vía DocuSign o similar</div>
+      </div>
+    </div>
+    <div class="paso-card">
+      <div class="paso-num">3</div>
+      <div class="paso-body">
+        <div class="paso-title" contenteditable="true">Pago de implementación</div>
+        <div class="paso-desc" contenteditable="true" data-placeholder="Detalles del pago">100% al inicio o según condiciones acordadas</div>
+      </div>
+    </div>
+    <div class="paso-card">
+      <div class="paso-num">4</div>
+      <div class="paso-body">
+        <div class="paso-title" contenteditable="true">Kick-off en 48 hs</div>
+        <div class="paso-desc" contenteditable="true">Coordinaremos la primera reunión de inicio con el equipo técnico de Aprova</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:24px;padding:20px 24px;border:1px solid var(--g-mid);border-radius:10px;background:var(--g-light);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+    <div>
+      <div style="font-size:12px;font-weight:700;color:var(--g-dark);margin-bottom:4px;">¿Tienes preguntas?</div>
+      <div style="font-size:13px;color:var(--ink-soft);">Contacta directamente a tu ejecutivo de cuenta</div>
+    </div>
+    <div style="text-align:right;">
+      <div style="font-size:14px;font-weight:600;color:var(--ink)" contenteditable="true" data-placeholder="Nombre del ejecutivo">Nombre Ejecutivo</div>
+      <div style="font-size:13px;color:var(--ink-mute)" contenteditable="true" data-placeholder="email@aprova.com">email@aprovacloud.com</div>
+      <div style="font-size:13px;color:var(--ink-mute)" contenteditable="true" data-placeholder="+XX XXX XXX XXXX">+XX XXX XXX XXXX</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ FOOTER ══ -->
+<div class="footer">
+  <div class="footer-brand">
+    <span class="dot"></span>
+    Apro<span>va</span>
+  </div>
+  <div class="footer-contact">
+    <strong contenteditable="true" data-placeholder="www.aprovacloud.com">www.aprovacloud.com</strong>
+    <span contenteditable="true" data-placeholder="contacto@aprova.com">contacto@aprovacloud.com</span>
+  </div>
+</div>
+
+</div><!-- /page -->
+
+<script>
+// Auto-fecha
+const meses=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+const hoy=new Date();
+const fechaEl=document.getElementById('fecha-auto');
+if(fechaEl&&!fechaEl.textContent.trim()) fechaEl.textContent=`${hoy.getDate()} de ${meses[hoy.getMonth()]} de ${hoy.getFullYear()}`;
+
+// Vista prospecto
+function togglePreview(){
+  document.body.classList.toggle('preview-mode');
+  const btn=document.querySelector('.btn-preview');
+  const isP=document.body.classList.contains('preview-mode');
+  btn.textContent=isP?'✏ Volver a editar':'👁 Vista prospecto';
+  document.querySelectorAll('[contenteditable]').forEach(el=>el.setAttribute('contenteditable',isP?'false':'true'));
+}
+
+// Toggle módulo
+function toggleModulo(id,label){
+  const card=document.getElementById(id);
+  const isChecked=label.querySelector('input').checked;
+  card.classList.toggle('selected',isChecked);
+  label.classList.toggle('active',isChecked);
+  updateGridState();
+  document.querySelectorAll('.combo-tab').forEach(t=>t.classList.remove('active'));
+}
+function updateGridState(){
+  const grid=document.getElementById('modulos-grid');
+  if(!grid) return;
+  const anySelected=grid.querySelectorAll('.modulo-card.selected').length>0;
+  grid.classList.toggle('none-selected',!anySelected);
+}
+
+// Combos
+const comboData={
+  'combo-none':{ids:[],desc:'',personalizado:false},
+  'combo-proveedores':{ids:['mod-proveedores'],desc:'Control de Proveedores: licitaciones, órdenes de compra, facturas, evaluación y IA documental.',personalizado:false},
+  'combo-p2p':{ids:['mod-proveedores','mod-cobranzas'],desc:'Procure-to-Pay: ciclo completo desde la orden de compra hasta el pago y gestión de cobranzas.',personalizado:false},
+  'combo-interna':{ids:['mod-rrhh','mod-viaticos'],desc:'Gestión Interna: Recursos Humanos completo más Viáticos y Presupuestos.',personalizado:false},
+  'combo-finanzas':{ids:['mod-cobranzas','mod-viaticos'],desc:'Finanzas Operativas: Cobranzas y Viáticos para control financiero integral.',personalizado:false},
+  'combo-ia':{ids:['mod-proveedores','mod-rrhh'],desc:'Inteligencia Artificial: módulos con IA activa — lectura automática de documentos y carga de CVs desde mail.',personalizado:false},
+  'combo-personalizado':{ids:[],desc:'',personalizado:true}
+};
+function selectCombo(id,btn){
+  document.querySelectorAll('.combo-tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.modulo-card').forEach(card=>{
+    card.classList.remove('selected');
+    const lbl=card.querySelector('.modulo-check');
+    if(lbl){lbl.classList.remove('active');lbl.querySelector('input').checked=false;}
+  });
+  const combo=comboData[id];
+  const seccion=document.getElementById('modulos-section');
+  const nota=document.getElementById('flujo-personalizado-note');
+  const desc=document.getElementById('combo-desc');
+  if(combo.personalizado){
+    if(seccion) seccion.classList.add('hidden-flujo');
+    if(nota) nota.classList.add('visible');
+    if(desc) desc.style.display='none';
+    return;
+  }
+  if(seccion) seccion.classList.remove('hidden-flujo');
+  if(nota) nota.classList.remove('visible');
+  if(id==='combo-none'){
+    const grid=document.getElementById('modulos-grid');
+    if(grid) grid.classList.add('none-selected');
+    if(desc) desc.style.display='none';
+    return;
+  }
+  combo.ids.forEach(mid=>{
+    const card=document.getElementById(mid);
+    if(!card) return;
+    card.classList.add('selected');
+    const lbl=card.querySelector('.modulo-check');
+    if(lbl){lbl.classList.add('active');lbl.querySelector('input').checked=true;}
+  });
+  if(combo.desc){desc.style.display='block';desc.textContent=combo.desc;} else {desc.style.display='none';}
+  updateGridState();
+}
+
+// Pasos proceso actual
+function makePasoHTML(){
+  return `<div class="proceso-paso">
+    <div class="pp-line"><div class="pp-dot" style="background:#dc2626;box-shadow:0 0 0 2px #dc2626"></div><div class="pp-track"></div></div>
+    <div class="pp-content"><div class="pp-area" contenteditable="true">Área / etapa</div><div class="pp-desc" contenteditable="true">Describe qué sucede en este paso del proceso.</div></div>
+  </div>`;
+}
+function addPasoActual(){
+  const c=document.getElementById('pasos-actual');
+  if(!c) return;
+  const div=document.createElement('div');
+  div.innerHTML=makePasoHTML();
+  c.appendChild(div.firstChild);
+}
+function removePasoActual(){
+  const c=document.getElementById('pasos-actual');
+  if(!c) return;
+  const pasos=c.querySelectorAll('.proceso-paso');
+  if(pasos.length>1) pasos[pasos.length-1].remove();
+}
+
+// Dolores — agregar / quitar
+function addDolor(){
+  const grid=document.getElementById('dolor-grid');
+  if(!grid) return;
+  const count=grid.querySelectorAll('.dolor-card').length+1;
+  const num=String(count).padStart(2,'0');
+  const div=document.createElement('div');
+  div.className='dolor-card';
+  div.innerHTML=`<div class="dolor-num">${num}</div><span class="dolor-text" contenteditable="true">Describe el problema o dolor identificado en el relevamiento.</span>`;
+  grid.appendChild(div);
+  updateDolorNums();
+}
+function removeDolor(){
+  const grid=document.getElementById('dolor-grid');
+  if(!grid) return;
+  const cards=grid.querySelectorAll('.dolor-card');
+  if(cards.length>1) cards[cards.length-1].remove();
+  updateDolorNums();
+}
+function updateDolorNums(){
+  const grid=document.getElementById('dolor-grid');
+  if(!grid) return;
+  grid.querySelectorAll('.dolor-card').forEach((card,i)=>{
+    const num=card.querySelector('.dolor-num');
+    if(num) num.textContent=String(i+1).padStart(2,'0');
+  });
+}
+
+// Tabla económica
+function addEcoRow(){
+  const tbody=document.getElementById('eco-tbody');
+  if(!tbody) return;
+  const totalRow=tbody.querySelector('.total-row');
+  const tr=document.createElement('tr');
+  tr.innerHTML='<td contenteditable="true">Ítem</td><td><span class="eco-price" contenteditable="true">A definir</span></td><td contenteditable="true">Descripción</td>';
+  tbody.insertBefore(tr,totalRow);
+}
+function removeEcoRow(){
+  const tbody=document.getElementById('eco-tbody');
+  if(!tbody) return;
+  const rows=tbody.querySelectorAll('tr:not(.total-row)');
+  if(rows.length>1) rows[rows.length-1].remove();
+}
+
+// Enter handler: campos de una sola línea no hacen salto
+const multilineClasses=['tall','section-intro','inv-note','problema-conclusion','pp-desc','proceso-value tall'];
+document.querySelectorAll('[contenteditable]').forEach(el=>{
+  const isMulti=el.classList.contains('tall')||el.classList.contains('section-intro')||el.classList.contains('inv-note')||el.classList.contains('pp-desc');
+  if(!isMulti) el.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();el.blur();}});
+});
+
+// Init combos
+document.addEventListener('DOMContentLoaded',()=>{
+  const btnP=document.querySelector('[onclick*="combo-personalizado"]');
+  if(btnP) selectCombo('combo-personalizado',btnP);
+});
+</script>
+
+<script>
+async function generarPDF() {
+  const { jsPDF } = window.jspdf || {};
+  const btn = document.getElementById('btn-pdf');
+  const toolbar = document.getElementById('toolbar');
+
+  // Elementos a ocultar temporalmente
+  const ocultar = document.querySelectorAll(
+    '.edit-hint, .btn-inline, .section-inline-actions .pasos-actions, ' +
+    '.modulo-check, .combo-tabs, #combo-desc, .pasos-actions'
+  );
+
+  btn.textContent = '⏳ Generando...';
+  btn.disabled = true;
+  toolbar.style.display = 'none';
+  ocultar.forEach(el => el.style.display = 'none');
+  window.scrollTo(0, 0);
+
+  const page = document.querySelector('.page');
+  const originalBg = document.body.style.background;
+  document.body.style.background = '#ffffff';
+
+  try {
+    const canvas = await html2canvas(page, {
+      scale: 2,
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: '#ffffff',
+      scrollX: 0,
+      scrollY: 0,
+      windowWidth: page.offsetWidth,
+      windowHeight: page.scrollHeight,
+      height: page.scrollHeight,
+      width: page.offsetWidth,
+      logging: false,
+    });
+
+    const imgW = canvas.width;
+    const imgH = canvas.height;
+
+    // PDF ancho = 210mm (A4 portrait), alto proporcional
+    const pdfW = 210;
+    const pdfH = Math.round((imgH / imgW) * pdfW);
+
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: [pdfW, pdfH],
+    });
+
+    pdf.addImage(
+      canvas.toDataURL('image/jpeg', 0.92),
+      'JPEG', 0, 0, pdfW, pdfH
+    );
+
+    // Nombre del archivo
+    const h1 = document.querySelector('.cover h1');
+    const nombre = h1
+      ? h1.textContent.trim().replace(/[^\w\s]/g, '').trim().replace(/\s+/g, '_').slice(0, 40)
+      : 'propuesta';
+    pdf.save('Aprova_' + nombre + '.pdf');
+
+  } catch (err) {
+    console.error(err);
+    alert('Error al generar el PDF. Intenta de nuevo.');
+  } finally {
+    document.body.style.background = originalBg;
+    toolbar.style.display = '';
+    ocultar.forEach(el => el.style.display = '');
+    btn.textContent = '⬇ Guardar como PDF';
+    btn.disabled = false;
+  }
+}
+</script>
+
+<!-- jsPDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+</body>
+</html>
